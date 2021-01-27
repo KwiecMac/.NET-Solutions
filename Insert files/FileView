@@ -1,0 +1,36 @@
+@model MOCapp.Models.List<FileReview>
+
+<table class="table table-hover table-bordered" id="ExeTable" style="margin-top: 50px;">
+        <thead>
+            <tr class="active">
+                <th class="text-center">File name</th>
+                <th class="text-center">Delete button</th>
+            </tr>
+        </thead>
+        <tbody id="myTable">
+            @{ var count = 0;
+                foreach (var item in Model)
+                {
+                    using (Html.BeginForm("RemoveFile", "File", new { fileName = item.FileName, idFile = item.ID }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <tr>
+                            <td class="text-center">@item.FileShortName</td>
+                            <td class="text-center">
+                                <input type="submit" name="submit" value="Delete file" class="btn btn-danger" />
+                            </td>
+                        </tr>
+                    }
+                    count++;
+                }
+            }
+        </tbody>
+    </table>
+    
+    @using (Html.BeginForm("Index", "File", new { id = Url.RequestContext.RouteData.Values["id"] }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="form-group" style="text-align:center;">
+            <label>Wybierz plik:</label>
+            <input type="file" name="files" id="files" multiple="multiple" style="text-align:center;margin:auto;" />
+            <input type="submit" class="btn btn-success" value="Add file" />
+        </div>
+    }
