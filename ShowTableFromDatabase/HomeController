@@ -12,12 +12,12 @@ namespace SolutionProject.Controllers
         public ActionResult Index(int id)
         {
                 ListOfClass listOfClass = new ListOfClass();
-                listOfClass.employee = employee(id);
+                listOfClass.employee = listEmployee(id);
 
                 return View(listOfClass);
         }
 
-        public List<Employee> (int id)
+        public List<Employee> listEmployee(int id)
         {
             List<Employee> emp;
             using (SolutionProject.Models.SolutionEntities db = new SolutionEntities())
