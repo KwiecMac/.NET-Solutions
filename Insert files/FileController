@@ -71,6 +71,30 @@ namespace SolutionApp.Controllers
 
         }
         
+        [HttpPost]
+        public ActionResult RemoveFile(string fileName, int idFile)
+        {
+                var path = Request.MapPath("~/Uploads/");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                var fullPath = Path.Combine(path, fileName);
+
+                if (System.IO.File.Exists(fullPath))
+                {
+                    System.IO.File.Delete(fullPath);
+                }
+
+                SolutionEntities dbo = new SolutionEntities();
+                
+                var dbi = dbo.File_Review.Where(x => x.ID == idFile).FirstOrDefault();
+                dbo.File_Review.Remove(dbi);
+                dbo.SaveChanges();
+
+                return RedirectToAction("Index");
+        }
+        
         private string CountStringLenght(string inputString)
         {
             if (inputString.Length >= 50)
@@ -88,4 +112,3 @@ namespace SolutionApp.Controllers
         
     }
 }
-© 2021 GitHub, Inc.
