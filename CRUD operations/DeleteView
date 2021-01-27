@@ -1,0 +1,40 @@
+@model SolutionProject.Models.ListOfClass
+
+<html>
+<head>
+</head>
+<body>
+    <div">
+        <table class="table table-bordered" id="Table" style="margin-left: auto; margin-right: auto;">
+            <thead>
+                <tr class="active">
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Surname</th>
+                    <th class="text-center">Date of birth</th>
+                    <th class="text-center">City</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody id="myTable">
+                @foreach (var item in Model.employee)
+                {
+                <tr style="background-color:#b3ffb3;">
+                     <td class="text-center">@item.FirstName</td>
+                     <td class="text-center">@item.LastName</td>
+                     <td class="text-center">@item.BirthDate</td>
+                     <td class="text-center">@item.City</td>
+                 </tr>
+                 <td>
+                        <div class="delete-section">
+                            @using (Html.BeginForm("Delete", "Delete", new { id = item.ID }))
+                            {
+                                <input type="submit" value="Delete" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');" />
+                            }
+                        </div>
+                    </td>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
