@@ -27,7 +27,7 @@ namespace SolutionApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Index(ListOfClass listOfClass, IEnumerable<HttpPostedFileBase> files)
+        public ActionResult Index(ListOfClass listOfClass, IEnumerable<HttpPostedFileBase> files, FileReview fileReview)
         {
             try
             {
