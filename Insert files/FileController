@@ -1,0 +1,91 @@
+using MOCapp.Models;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace SolutionApp.Controllers
+{
+    public class FileController : Controller
+    {
+        private SqlConnection con;
+        private void connection()
+        {
+            string constr = ConfigurationManager.ConnectionStrings["SolutionEntities"].ToString();
+            con = new SqlConnection(constr);
+        }
+
+        // GET: Add
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Index(ListOfClass listOfClass, IEnumerable<HttpPostedFileBase> files)
+        {
+            try
+            {
+                foreach (var item in files)
+                {
+                    if (item != null && item.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(item.FileName);
+                        fileName = CountStringLenght(fileName);
+                        var rondom = Guid.NewGuid().ToString() + fileName;
+                        var path = Server.MapPath("~/Uploads/");
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        var filePathName = Path.Combine(path, rondom);
+                        item.SaveAs(filePathName);
+                        
+                        fileReview.FileName = rondom;
+
+                        connection();
+                        SqlCommand comm = new SqlCommand("INSERT INTO dbo.File_Review(File_Name, File_Short_Name, Editor) Values(@FileName, @FileShortName, @Editor)", con);
+                        comm.CommandType = CommandType.StoredProcedure;
+                        comm.Parameters.AddWithValue("@File_Name", fileReview.FileName ?? (object)DBNull.Value);
+                        var fileShortName = fileReview.FileName.Remove(0, 36);
+                        comm.Parameters.AddWithValue("@File_Short_Name", fileShortName ?? (object)DBNull.Value);
+                        comm.Parameters.AddWithValue("@Editor", User.Identity.Name);
+                        con.Open();
+                        comm.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+                
+                return RedirectToAction("Index", "File");
+            }
+
+            catch (Exception ex)
+            {
+                return View(ex.Message);
+            }
+
+        }
+        
+        private string CountStringLenght(string inputString)
+        {
+            if (inputString.Length >= 50)
+            {
+                var cutStartString = inputString.Substring(0, 39);
+                var cutEndString = inputString.Substring(inputString.Length - 10);
+                var cutInputString = cutStartString + cutEndString;
+                return cutInputString;
+            }
+            else
+            {
+                return inputString;
+            }
+        }
+        
+    }
+}
+© 2021 GitHub, Inc.
