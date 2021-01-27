@@ -1,0 +1,89 @@
+using MOCapp.Models;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+
+namespace SolutionApp.Controllers
+{
+    public class EditController : Controller
+    {
+        private SqlConnection con;
+        private void connection()
+        {
+            string constr = ConfigurationManager.ConnectionStrings["SolutionEntities"].ToString();
+            con = new SqlConnection(constr);
+        }
+
+        // GET: Add
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult Edit(int Id)
+        {
+            ListOfClass listOfClass = new ListOfClass();
+            listOfClass.employee = listEmployee(Id);
+        
+            return View();
+        }
+        
+        [HttpPost]
+        public ActionResult Edit(ListOfClass listOfClass)
+        {
+            try
+            {
+                SolutionApp.Models.SolutionEntities db = new SolutionEntities()
+              
+                //Extracting the ID from the model
+                var tableEmployee = listOfClass.employee.ToList();
+                var selectedID = tableEmployee.Select(x => x.ID);
+                
+                //Finding the same ID in the database
+                var foundID = db.Employee.Find(selectedID);
+              
+                db.Entry(foundID).Property("First_Name").CurrentValue = listOfClass.employee.Select(x => x.FirstName).FirstOrDefault();
+                db.Entry(foundID).Property("Last_Name").CurrentValue = listOfClass.employee.Select(x => x.LastName).FirstOrDefault();
+                db.Entry(foundID).Property("Birth_Date").CurrentValue = listOfClass.employee.Select(x => x.BirthDate).FirstOrDefault();
+                db.Entry(foundID).Property("City").CurrentValue = listOfClass.employee.Select(x => x.City).FirstOrDefault();
+
+                db.SaveChanges();
+
+                return RedirectToAction("Index");
+            }
+
+            catch (Exception ex)
+            {
+                return View(ex.Message);
+            }
+
+        }
+        
+        public List<Employee> listEmployee(int Id)
+        {
+            List<Employee> le;
+            using (SolutionApp.Models.SolutionEntities db = new SolutionEntities())
+            {
+                le = (from a in db.Employee
+                      where a.ID == Id
+                      select new Employee
+                      {
+                          ID = a.ID,
+                          FirstName = a.First_Name,
+                          LastName = a.Last_Name,
+                          BirthDate = a.Birth_Date,
+                          City = a.City
+                      }).ToList();
+            }
+
+            return le;
+        }
+        
+    }
+}
