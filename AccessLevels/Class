@@ -1,0 +1,40 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace TestApp.Models
+{
+    public class AccessUser
+    {
+        public static void CheckAccessLevel()
+        {
+            TestApp.Models.TestEntities db = new TestEntities();
+
+            //string LoginAccess = Environment.UserName;
+            string LoginAccess = HttpContext.Current.User.Identity.Name;
+
+            var v2 = (from a in db.Access_Login_Email
+                      where a.Login_Access == LoginAccess
+                      select new AccessLogin
+                      {
+                          LoginAccess = a.Login_Access,
+                          PermissionAccess = a.Permission_Access
+
+                      });
+
+            if (v2.Any())
+            {
+                System.Web.HttpContext.Current.Session["PermissionAccess"] = Convert.ToInt32(v2.FirstOrDefault().PermissionAccess);
+                System.Web.HttpContext.Current.Session["UserName"] = Convert.ToString(v2.FirstOrDefault().UserName);
+                System.Web.HttpContext.Current.Session["Access_denied"] = 1;
+            }
+
+            else
+            {
+                System.Web.HttpContext.Current.Session["Access_denied"] = 0;
+            }
+
+        }
+    }
+}
