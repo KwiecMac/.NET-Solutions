@@ -1,0 +1,16 @@
+public ActionResult Index()
+        {
+            AccessUser.CheckAccessLevel();
+
+            if (Convert.ToInt32(Session["PermissionAccess"]) > 1 && Convert.ToInt32(Session["Access_denied"]) == 1)
+            {
+                return View();
+            }
+
+            else
+            {
+                TempData["msg"] = "<script>alert('Brak uprawnień!');</script>";
+                return RedirectToAction("Index", "Home");
+            }
+
+        }
